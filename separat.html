@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Abril+Fatface&display=swap"
+      rel="stylesheet"
+    />
+    <title>Bistro Babushka</title>
+    <style>
+      main {
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        margin: 50px;
+      }
+
+      h2,
+      p {
+        color: darkblue;
+      }
+
+      img {
+        max-width: 90%;
+      }
+
+      .valgt {
+        background-color: #f5e291;
+        text-decoration: underline;
+        font-size: 1.3rem;
+      }
+
+      button {
+        border-radius: 4px;
+        text-decoration: none;
+        border: none;
+        padding: 15px 30px;
+        font-family: "Abril Fatface", cursive;
+        font-size: 1rem;
+        background-color: whitesmoke;
+      }
+
+      button:hover {
+        text-decoration: underline;
+        cursor: pointer;
+      }
+
+      nav,
+      #alle,
+      h1 {
+        font-family: "Abril Fatface", cursive;
+        text-align: center;
+      }
+
+      h2 {
+        font-family: "Abril Fatface", cursive;
+      }
+
+      h1 {
+        font-size: clamp(3rem, 12vw, 6rem);
+        padding: 25px;
+        color: orange;
+        background-image: url(streger.svg);
+      }
+
+      nav {
+        padding-bottom: 50px;
+      }
+
+      /* mobile first */
+      @media (min-width: 700px) {
+        article {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          padding-top: 50px;
+        }
+      }
+
+      .img {
+        grid-column: 1/2;
+      }
+
+      .txt {
+        grid-column: 2;
+        text-align: center;
+        padding-bottom: 30px;
+      }
+
+      .txt h2,
+      #sted,
+      #info {
+        padding-bottom: 30px;
+      }
+
+      p {
+        font-size: 1.2rem;
+      }
+
+      @media (min-width: 700px) {
+        footer {
+          display: flex;
+          justify-content: space-evenly;
+        }
+      }
+
+      footer {
+        padding-top: 50px;
+        gap: 30px;
+      }
+
+      footer p {
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <nav>
+        <h1>BISTRO BABUSHKA</h1>
+        <button id="back">TILBAGE TIL FORSIDE</button>
+      </nav>
+    </header>
+    <main>
+      <article>
+        <div class="img">
+          <img src="" alt="" />
+        </div>
+        <div class="txt">
+          <h2></h2>
+          <p id="info"></p>
+          <p id="sted"></p>
+          <p id="pris"></p>
+        </div>
+      </article>
+    </main>
+    <footer>
+      <div>
+        <p>
+          Besøg os på: <br />
+          Babushkagade 27, 2500 Valby
+        </p>
+      </div>
+      <div>
+        <p>
+          Åbningstider: <br />
+          Mandag - torsdag: 12:00 - 23:00 <br />
+          Fredag - søndag: 12:00 - 24:00
+        </p>
+      </div>
+      <div>
+        <p>
+          Bestil bord på: <br />
+          Tlf.: +45 37 92 90 73
+        </p>
+      </div>
+    </footer>
+    <script>
+      const urlParams = new URLSearchParams(window.location.search);
+      const id = urlParams.get("id");
+
+      const url = `https://babushka-dd8a.restdb.io/rest/menu/${id}`;
+      let retter;
+      const options = {
+        headers: {
+          "x-apikey": "600ec2fb1346a1524ff12de4",
+        },
+      };
+
+      console.log("ID", id);
+      document.addEventListener("DOMContentLoaded", hentData);
+
+      async function hentData() {
+        console.log("henter data");
+        const response = await fetch(url, options);
+
+        retter = await response.json();
+        console.log("Retter", retter);
+        vis(retter);
+      }
+
+      function vis(retter) {
+        document.querySelector("h2").textContent = retter.navn;
+        document.querySelector("#info").textContent = retter.langbeskrivelse;
+        document.querySelector(
+          "#sted"
+        ).textContent = `Oprindelsesregion: ${retter.oprindelsesregion}`;
+        document.querySelector(
+          "#pris"
+        ).textContent = `Pris: ${retter.pris} DKK`;
+        document.querySelector("img").src =
+          "medium/" + retter.billednavn + "-md.jpg";
+
+        // kalder på tilbage-knappen
+        document
+          .querySelector("#back")
+          .addEventListener("click", tilbageTilGalleri);
+      }
+
+      function tilbageTilGalleri() {
+        console.log("tilbage til forsiden");
+        history.back();
+      }
+    </script>
+  </body>
+</html>
