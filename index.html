@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Abril+Fatface&display=swap"
+      rel="stylesheet"
+    />
+    <title>Bistro Babushka</title>
+    <style>
+      main {
+        margin: 0;
+        padding: 0;
+      }
+      article {
+        background-color: #f5e291;
+
+        cursor: pointer;
+      }
+
+      section {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+
+        gap: 30px;
+      }
+
+      body {
+        margin: 50px;
+      }
+
+      h2,
+      p {
+        color: darkblue;
+        padding-left: 10px;
+        text-align: center;
+      }
+
+      img {
+        max-width: 100%;
+      }
+
+      .valgt {
+        background-color: #f5e291;
+        text-decoration: underline;
+        font-size: 1.3rem;
+      }
+
+      button {
+        border-radius: 10px;
+        text-decoration: none;
+        border: none;
+        padding: 15px 30px;
+        font-family: "Abril Fatface", cursive;
+        font-size: 1rem;
+        background-color: whitesmoke;
+      }
+
+      button:hover {
+        text-decoration: underline;
+        cursor: pointer;
+      }
+
+      nav,
+      h2,
+      h1 {
+        font-family: "Abril Fatface", cursive;
+        text-align: center;
+      }
+
+      #alle {
+        padding-bottom: 30px;
+        font-size: 2rem;
+      }
+
+      h1 {
+        font-size: clamp(3rem, 12vw, 6rem);
+        padding: 25px;
+        color: orange;
+        background-image: url(streger.svg);
+      }
+
+      nav {
+        padding-bottom: 50px;
+        gap: 40px;
+        display: flex;
+        place-content: center;
+      }
+
+      @media (max-width: 1000px) {
+        nav {
+          display: grid;
+          gap: 20px;
+        }
+      }
+
+      #pris {
+        font-size: 1.2rem;
+        text-align: center;
+      }
+
+      @media (min-width: 700px) {
+        footer {
+          display: flex;
+          justify-content: space-evenly;
+        }
+      }
+
+      footer {
+        padding-top: 50px;
+        gap: 30px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>BISTRO BABUSHKA</h1>
+      <nav>
+        <button data-kategori="alle" class="valgt">Alle</button>
+        <button data-kategori="hovedretter">Hovedretter</button>
+        <button data-kategori="forretter">Forretter</button>
+        <button data-kategori="desserter">Desserter</button>
+        <button data-kategori="sideorders">Side orders</button>
+        <button data-kategori="drikkevarer">Drikkevarer</button>
+      </nav>
+      <h2 id="alle">Alle</h2>
+    </header>
+    <main>
+      <section class="data_menu"></section>
+      <template>
+        <article>
+          <img src="" alt="" />
+          <h2></h2>
+          <p id="info"></p>
+          <p id="pris"></p>
+        </article>
+      </template>
+    </main>
+    <footer>
+      <div>
+        <p>
+          Besøg os på: <br />
+          Babushkagade 27, 2500 Valby
+        </p>
+      </div>
+      <div>
+        <p>
+          Åbningstider: <br />
+          Mandag - torsdag: 12:00 - 23:00 <br />
+          Fredag - søndag: 12:00 - 24:00
+        </p>
+      </div>
+      <div>
+        <p>
+          Bestil bord på: <br />
+          Tlf.: +45 37 92 90 73
+        </p>
+      </div>
+    </footer>
+    <script>
+      const header = document.querySelector("header h2");
+      const url = "https://babushka-dd8a.restdb.io/rest/menu";
+      const options = {
+        headers: {
+          "x-apikey": "600ec2fb1346a1524ff12de4",
+        },
+      };
+
+      document.addEventListener("DOMContentLoaded", start);
+
+      // tilføjer variabler
+      let retter;
+      let filter = "alle";
+
+      // første funktion der kaldes efter DOM er loaded
+      function start() {
+        // tilføjer eventlistener på alle knappe
+        const filterKnapper = document.querySelectorAll("nav button");
+        filterKnapper.forEach((knap) =>
+          knap.addEventListener("click", filtrerRetter)
+        );
+      }
+
+      // eventhandler:
+      function filtrerRetter() {
+        console.log("knap");
+        // sætter filter-variablen lig med værdien af data/ret-attributten for den valgte knap.
+        filter = this.dataset.kategori;
+
+        // kalder på json
+        vis(retter);
+
+        // skifter overskrift alt efter hvilken knap, man trykker på
+        header.textContent = this.textContent;
+
+        // fjerner klassen "valgt", når man trykker på en anden knap
+        document.querySelector(".valgt").classList.remove("valgt");
+        // og tilføjer klassen på den knap
+        this.classList.add("valgt");
+      }
+
+      async function hentData() {
+        console.log("henter data");
+        const response = await fetch(url, options);
+
+        retter = await response.json();
+        console.log("Retter", retter);
+        vis(retter);
+      }
+
+      hentData();
+
+      function vis(json) {
+        console.log(json);
+      }
+
+      function vis(retter) {
+        const data = document.querySelector(".data_menu");
+        const menuTemplate = document.querySelector("template");
+        // sletter indholdet fra listen, altså det HTML-element du appender template-klonen til.
+        data.textContent = "";
+
+        // løber retlisten igennem og indsætter data i en template
+        retter.forEach((ret) => {
+          console.log("Kategori", ret.kategori);
+          if (filter == ret.kategori || filter == "alle") {
+            // placer retterne i HTML
+            const klon = menuTemplate.cloneNode(true).content;
+            klon.querySelector("h2").textContent = ret.navn;
+            klon.querySelector("#info").textContent = ret.kortbeskrivelse;
+            klon.querySelector("#pris").textContent = `Pris: ${ret.pris} DKK`;
+            klon.querySelector("img").src =
+              "medium/" + ret.billednavn + "-md.jpg";
+            // event-listener til separat side
+            klon
+              .querySelector("article")
+              .addEventListener("click", () => visDetajler(ret));
+            data.appendChild(klon);
+          }
+        });
+        function visDetajler(hvad) {
+          location.href = `separat_single.html?id=${hvad._id}`;
+        }
+      }
+    </script>
+  </body>
+</html>
